@@ -6,6 +6,7 @@
 </head>
 <body>
     <h1>LLMTools Result</h1>
+    <hr>
     <div id="result"></div>
 
     <script>
@@ -28,22 +29,26 @@
             return num;
         }
 
-        // Simple neural net sim (placeholder; use ml5.js for real)
-        function simpleNeuralNet(input) {
-            // Dummy: pretend it's a model predicting output = input * 2 + 1
-            return input * 2 + 1;
+        // New: Factorial with BigInt for large numbers
+        function factorial(n) {
+            n = BigInt(n);
+            let result = 1n;
+            for (let i = 2n; i <= n; i++) {
+                result *= i;
+            }
+            return result.toString(); // Convert to string for output
         }
 
         const adderPayload = getQueryParam('adder');
         const primePayload = getQueryParam('prime');
-        const neuralPayload = getQueryParam('neuralnet');
+        const factorialPayload = getQueryParam('factorial');
 
-        let result = 'No tool specified. Try ?adder=1+2 or ?prime=10 or ?neuralnet=5';
+        let result = 'No tool specified. Try ?adder=1+2 or ?prime=10 or ?factorial=5';
 
         if (adderPayload) {
             try {
                 // Safe eval for basic math (limit to + - * /)
-                const safeExpr = adderPayload.replace(/[^0-9+\-*/(). ]/g, ''); // Sanitize
+                const safeExpr = adderPayload.replace(/[^0-9+\-*/(). ]/g, '');
                 result = `Adder result: ${eval(safeExpr)}`;
             } catch (e) {
                 result = 'Invalid adder expression.';
@@ -55,12 +60,12 @@
             } else {
                 result = 'Invalid prime input.';
             }
-        } else if (neuralPayload) {
-            const input = parseFloat(neuralPayload);
-            if (!isNaN(input)) {
-                result = `Neural net prediction for ${input}: ${simpleNeuralNet(input)}`;
+        } else if (factorialPayload) {
+            const num = parseInt(factorialPayload);
+            if (!isNaN(num) && num >= 0 && num <= 1000) { // Cap to avoid browser freeze
+                result = `Factorial of ${num}: ${factorial(num)}`;
             } else {
-                result = 'Invalid neural net input.';
+                result = 'Invalid factorial input (use 0-1000).';
             }
         }
 
