@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LLMTools</title>
+</head>
+<body>
+    <h1>LLMTools Result</h1>
+    <div id="result"></div>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function isPrime(num) {
+            if (num <= 1) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+
+        function findNextPrime(start) {
+            let num = parseInt(start) + 1;
+            while (!isPrime(num)) num++;
+            return num;
+        }
+
+        // Simple neural net sim (placeholder; use ml5.js for real)
+        function simpleNeuralNet(input) {
+            // Dummy: pretend it's a model predicting output = input * 2 + 1
+            return input * 2 + 1;
+        }
+
+        const adderPayload = getQueryParam('adder');
+        const primePayload = getQueryParam('prime');
+        const neuralPayload = getQueryParam('neuralnet');
+
+        let result = 'No tool specified. Try ?adder=1+2 or ?prime=10 or ?neuralnet=5';
+
+        if (adderPayload) {
+            try {
+                // Safe eval for basic math (limit to + - * /)
+                const safeExpr = adderPayload.replace(/[^0-9+\-*/(). ]/g, ''); // Sanitize
+                result = `Adder result: ${eval(safeExpr)}`;
+            } catch (e) {
+                result = 'Invalid adder expression.';
+            }
+        } else if (primePayload) {
+            const num = parseInt(primePayload);
+            if (!isNaN(num)) {
+                result = `Next prime after ${num}: ${findNextPrime(num)}`;
+            } else {
+                result = 'Invalid prime input.';
+            }
+        } else if (neuralPayload) {
+            const input = parseFloat(neuralPayload);
+            if (!isNaN(input)) {
+                result = `Neural net prediction for ${input}: ${simpleNeuralNet(input)}`;
+            } else {
+                result = 'Invalid neural net input.';
+            }
+        }
+
+        document.getElementById('result').innerText = result;
+    </script>
+</body>
+</html>
